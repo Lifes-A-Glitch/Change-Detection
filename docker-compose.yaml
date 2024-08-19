@@ -1,0 +1,48 @@
+---
+services:
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io:latest
+    container_name: changedetection
+    hostname: changedetection
+    volumes:
+      - ./data/datastore:/datastore
+    ports:
+      - 5000:5000
+    environment:
+      # - WEBDRIVER_URL=http://playwright-chrome:4444/wd/hub
+      - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000
+      # - BASE_URL=https://mysite.com # configure this for your own domain
+
+    depends_on:
+      playwright-chrome:
+        condition: service_started
+    restart: unless-stopped
+
+  # browser-chrome:
+  #   hostname: browser-chrome
+  #   image: selenium/standalone-chrome:125.0
+  #   shm_size: '2gb'
+  #   # volumes:
+  #   #     # Workaround to avoid the browser crashing inside a docker container
+  #   #     # See https://github.com/SeleniumHQ/docker-selenium#quick-start
+  #   #     - /dev/shm:/dev/shm
+  #   restart: unless-stopped
+   
+  playwright-chrome:
+    hostname: playwright-chrome
+    image: browserless/chrome
+    restart: unless-stopped
+    environment:
+      - SCREEN_WIDTH=1920
+      - SCREEN_HEIGHT=1024
+      - SCREEN_DEPTH=16
+      - ENABLE_DEBUGGER=false
+      - PREBOOT_CHROME=true
+      - CONNECTION_TIMEOUT=300000
+      - MAX_CONCURRENT_SESSIONS=10
+      - CHROME_REFRESH_TIME=600000
+      - DEFAULT_BLOCK_ADS=true
+      - DEFAULT_STEALTH=true
+      # Ignore HTTPS errors, like for self-signed certs
+      - DEFAULT_IGNORE_HTTPS_ERRORS=true
+
