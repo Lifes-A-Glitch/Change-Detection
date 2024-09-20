@@ -1,5 +1,3 @@
-# version: '3.9'
-name: changedetection-project
 services:
   changedetection:
     hostname: changedetection
@@ -49,20 +47,20 @@ services:
     command: --cleanup --interval 43200  # Cleanup old images and check for updates every 300 seconds
 
 # Used for fetching pages via Playwright+Chrome where you need Javascript support.
-# Note: Works well but is deprecated, does not fetch full page screenshots (doesnt work with Visual Selector)
-#       Does not report status codes (200, 404, 403) and other issues
-  browser-chrome:
-    hostname: browser-chrome
-    image: selenium/standalone-chrome:4
-    shm_size: '2gb'
+# ! Note: Works well but is deprecated, does not fetch full page screenshots (doesnt work with Visual Selector)
+# !     Does not report status codes (200, 404, 403) and other issues
+  # browser-chrome:
+  #   hostname: browser-chrome
+  #   image: selenium/standalone-chrome:4
+  #   shm_size: '2gb'
 
-    environment:
-        - VNC_NO_PASSWORD=1
-        - SCREEN_WIDTH=1920
-        - SCREEN_HEIGHT=1080
-        - SCREEN_DEPTH=24
-    volumes:
-        # Workaround to avoid the browser crashing inside a docker container
-        # See https://github.com/SeleniumHQ/docker-selenium#quick-start
-        - /dev/shm:/dev/shm
-    restart: unless-stopped
+  #   environment:
+  #       - VNC_NO_PASSWORD=1
+  #       - SCREEN_WIDTH=1920
+  #       - SCREEN_HEIGHT=1080
+  #       - SCREEN_DEPTH=24
+  #   volumes:
+  #       # Workaround to avoid the browser crashing inside a docker container
+  #       # See https://github.com/SeleniumHQ/docker-selenium#quick-start
+  #       - /dev/shm:/dev/shm
+  #   restart: unless-stopped
