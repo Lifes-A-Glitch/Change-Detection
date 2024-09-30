@@ -1,0 +1,17 @@
+[Unit]
+Description=Changedetection.io Docker Compose Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+WorkingDirectory=/home/pi/docker/changedetection.io
+ExecStart=/usr/bin/docker-compose up --force-recreate --remove-orphans --detach
+ExecStop=/usr/bin/docker-compose down
+TimeoutStartSec=0
+Restart=always
+RestartSec=10s
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+ 
