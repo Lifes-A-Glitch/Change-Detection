@@ -5,8 +5,17 @@ services:
     image: ghcr.io/dgtlmoon/changedetection.io:latest
     volumes:
       - ./data/datastore:/datastore
+      - ./changedetection-backup.zip:/backup.zip
       - /etc/localtime:/etc/localtime:ro  # Sync time with the host
       - /etc/timezone:/etc/timezone:ro  # Sync timezone with the host
+    # labels: # * Supposed to be working with Traefik
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.nginx.rule=Host(`changedetection.local.lifesaglitch.tech`)"
+    #   - "traefik.http.routers.nginx.entrypoints=https"
+    #   - "traefik.http.routers.nginx.tls=true"
+    #   - "traefik.http.services.nginx.loadbalancer.server.port=5000"
+    # networks:
+    #   - proxy
     ports:
       - 5000:5000
     environment:
@@ -33,14 +42,15 @@ services:
       - SCREEN_DEPTH=16
       - MAX_CONCURRENT_CHROME_PROCESSES=3  # 3 webpages opened concurrently
       - FAST_PUPPETEER_CHROME_FETCHER=yes
+      - CONNECTION_TIMEOUT=600000
     dns: # Comment out if you do not have a selective DNS you want to use. 
       - 10.7.1.228  # Replace with your Pi-hole IP address
-    # healthcheck:
-    #   test: curl --fail http://localhost:3000 || exit 1  # Check if Puppeteer is accessible on port 3000
-    #   interval: 30s  # Check every 30 seconds
-    #   timeout: 10s  # Fail if not responsive within 10 seconds
-    #   retries: 3  # Retry up to 3 times before marking as unhealthy
-    #   start_period: 40s  # Give Puppeteer up to 40 seconds to start
+    healthcheck:
+      test: "python3 /usr/src/app/docker-health-check.py --host http://localhost"  # Check if Puppeteer is accessible on port 3000
+      interval: 30s  # Check every 30 seconds
+      timeout: 5s  # Fail if not responsive within 5 seconds
+      retries: 3  # Retry up to 3 times before marking as unhealthy
+      start_period: 10s  # Give Puppeteer up to 40 seconds to start
 
   watchtower:
     container_name: watchtower
@@ -70,3 +80,8 @@ services:
   #       # See https://github.com/SeleniumHQ/docker-selenium#quick-start
   #       - /dev/shm:/dev/shm
   #   restart: unless-stopped
+
+# Supposed to be working with Traefik
+# networks:
+#   proxy:
+#     external: true
