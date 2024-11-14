@@ -4,17 +4,16 @@ services:
     container_name: changedetection
     image: ghcr.io/dgtlmoon/changedetection.io:latest
     volumes:
-      - ./data/datastore:/datastore
-      - ./changedetection-backup.zip:/backup.zip
-      - /etc/localtime:/etc/localtime:ro  # Sync time with the host
-      - /etc/timezone:/etc/timezone:ro  # Sync timezone with the host
+      # - ./data/datastore:/datastore # For without container management
+      - changedetection_ds:/datastore # This is for portainer
+
     ports:
       - 5000:5000
     environment:
-        - PLAYWRIGHT_DRIVER_URL=ws://sockpuppetbrowser:3000 # * this is for the puppeteer modification. Puppeteer is not officially supported by changedetection, but it works so smoothly.
-      # - WEBDRIVER_URL=http://playwright-chrome:4444/wd/hub # * This is for selenium
-      # - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000 # TODO: Commented out 8/19/2024; see comments below.
-      # - BASE_URL=https://mysite.com # configure this for your own domain
+      - PLAYWRIGHT_DRIVER_URL=ws://sockpuppetbrowser:3000 # * this is for the puppeteer modification. Puppeteer is not officially supported by changedetection, but it works so smoothly.
+    # - WEBDRIVER_URL=http://playwright-chrome:4444/wd/hub # * This is for selenium
+    # - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000 # TODO: Commented out 8/19/2024; see comments below.
+    # - BASE_URL=https://mysite.com # configure this for your own domain
 
     depends_on:
       sockpuppetbrowser:
@@ -32,31 +31,29 @@ services:
       - SCREEN_WIDTH=1920
       - SCREEN_HEIGHT=1024
       - SCREEN_DEPTH=16
-      - MAX_CONCURRENT_CHROME_PROCESSES=3  # 3 webpages opened concurrently
+      - MAX_CONCURRENT_CHROME_PROCESSES=3 # 3 webpages opened concurrently
       - FAST_PUPPETEER_CHROME_FETCHER=yes
       - CONNECTION_TIMEOUT=600000
-    dns: # Comment out if you do not have a selective DNS you want to use. 
-      - 10.7.1.228  # Replace with your Pi-hole IP address
+    dns:
+      # Comment out if you do not have a selective DNS you want to use. 
+      - 10.7.1.228 # Replace with your Pi-hole IP address
     healthcheck:
-      test: "python3 /usr/src/app/docker-health-check.py --host http://localhost"  # Check if Puppeteer is accessible on port 3000
-      interval: 30s  # Check every 30 seconds
-      timeout: 5s  # Fail if not responsive within 5 seconds
-      retries: 3  # Retry up to 3 times before marking as unhealthy
-      start_period: 10s  # Give Puppeteer up to 40 seconds to start
+      test: "python3 /usr/src/app/docker-health-check.py --host http://localhost" # Check if Puppeteer is accessible on port 3000
+      interval: 30s # Check every 30 seconds
+      timeout: 5s # Fail if not responsive within 5 seconds
+      retries: 3 # Retry up to 3 times before marking as unhealthy
+      start_period: 10s # Give Puppeteer up to 40 seconds to start
 
   watchtower:
     container_name: watchtower
     image: containrrr/watchtower:latest
     restart: unless-stopped
     volumes:
-      - /etc/localtime:/etc/localtime:ro  # Sync time with the host
-      - /etc/timezone:/etc/timezone:ro  # Sync timezone with the host
-      - /var/run/docker.sock:/var/run/docker.sock  # Watchtower needs access to the Docker socket
-    command: --cleanup --interval 43200  # Cleanup old images and check for updates every 300 seconds
-
-# Used for fetching pages via Playwright+Chrome where you need Javascript support.
-# ! Note: Works well but is deprecated, does not fetch full page screenshots (doesnt work with Visual Selector)
-# !     Does not report status codes (200, 404, 403) and other issues
+      - /var/run/docker.sock:/var/run/docker.sock # Watchtower needs access to the Docker socket
+    command: --cleanup --interval 43200 # Cleanup old images and check for updates every 300 seconds
+  # Used for fetching pages via Playwright+Chrome where you need Javascript support.
+  # ! Note: Works well but is deprecated, does not fetch full page screenshots (doesnt work with Visual Selector)
+  # !     Does not report status codes (200, 404, 403) and other issues
   # browser-chrome:
   #   hostname: browser-chrome
   #   image: selenium/standalone-chrome:4
@@ -72,3 +69,7 @@ services:
   #       # See https://github.com/SeleniumHQ/docker-selenium#quick-start
   #       - /dev/shm:/dev/shm
   #   restart: unless-stopped
+
+  # Portainer volume variables
+volumes:
+  changedetection_ds:
