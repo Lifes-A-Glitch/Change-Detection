@@ -8,14 +8,6 @@ services:
       - ./changedetection-backup.zip:/backup.zip
       - /etc/localtime:/etc/localtime:ro  # Sync time with the host
       - /etc/timezone:/etc/timezone:ro  # Sync timezone with the host
-    # labels: # * Supposed to be working with Traefik
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.nginx.rule=Host(`changedetection.local.lifesaglitch.tech`)"
-    #   - "traefik.http.routers.nginx.entrypoints=https"
-    #   - "traefik.http.routers.nginx.tls=true"
-    #   - "traefik.http.services.nginx.loadbalancer.server.port=5000"
-    # networks:
-    #   - proxy
     ports:
       - 5000:5000
     environment:
@@ -80,8 +72,3 @@ services:
   #       # See https://github.com/SeleniumHQ/docker-selenium#quick-start
   #       - /dev/shm:/dev/shm
   #   restart: unless-stopped
-
-# Supposed to be working with Traefik
-# networks:
-#   proxy:
-#     external: true
