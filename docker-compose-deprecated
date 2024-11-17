@@ -7,8 +7,8 @@ services:
     image: ghcr.io/dgtlmoon/changedetection.io:latest
     volumes:
       - ./data/datastore:/datastore
-      - /etc/localtime:/etc/localtime:ro  # Sync time with the host
-      - /etc/timezone:/etc/timezone:ro  # Sync timezone with the host
+      - /etc/localtime:/etc/localtime:ro  # Sync time with the host # ! Do not need this anymore
+      - /etc/timezone:/etc/timezone:ro  # Sync timezone with the host # ! Do not need this anymore
     ports:
       - 5000:5000
     environment:
@@ -43,8 +43,8 @@ services:
     image: containrrr/watchtower:latest
     restart: unless-stopped
     volumes:
-      - /etc/localtime:/etc/localtime:ro  # Sync time with the host
-      - /etc/timezone:/etc/timezone:ro  # Sync timezone with the host
+      - /etc/localtime:/etc/localtime:ro  # Sync time with the host # ! Do not need this anymore
+      - /etc/timezone:/etc/timezone:ro  # Sync timezone with the host # ! Do not need this anymore
       - /var/run/docker.sock:/var/run/docker.sock  # Watchtower needs access to the Docker socket
     command: --cleanup --interval 43200  # Cleanup old images and check for updates every 300 seconds
 
@@ -66,8 +66,9 @@ services:
   #   dns:
   #     - 10.7.1.228  # Replace with your Pi-hole IP address
 
-  # ! May be depreciated. Go to url for more info
-  # ! https://github.com/dgtlmoon/changedetection.io/blob/8a35d62e02db38ab6fee2ac06eb2171d7611551c/docker-compose.yml#L76-L89
+  # ! Note: Works well but is deprecated, does not fetch full page screenshots (doesnt work with Visual Selector)
+  # !     Does not report status codes (200, 404, 403) and other issues
+  # !     https://github.com/dgtlmoon/changedetection.io/blob/8a35d62e02db38ab6fee2ac06eb2171d7611551c/docker-compose.yml#L76-L89
   # browser-chrome:
   #   hostname: browser-chrome
   #   image: selenium/standalone-chrome:125.0
