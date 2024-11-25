@@ -4,8 +4,8 @@ services:
     container_name: changedetection
     image: ghcr.io/dgtlmoon/changedetection.io:latest
     volumes:
-      # - ./data/datastore:/datastore # For without container management
-      - changedetection_ds:/datastore # This is for portainer
+      - ./data/datastore:/datastore # For without container management
+      # - changedetection_ds:/datastore # This is for portainer
     ports:
       - 5000:5000
     environment:
