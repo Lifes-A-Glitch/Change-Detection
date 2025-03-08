@@ -2,3 +2,4 @@
 data/
 *.deprecated
 .env
+secrets.txt
