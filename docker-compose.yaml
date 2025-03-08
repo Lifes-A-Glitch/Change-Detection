@@ -35,13 +35,13 @@ services:
       - CONNECTION_TIMEOUT=600000
     dns:
       # Comment out if you do not have a selective DNS you want to use. 
-      - 10.7.1.228 # Replace with your Pi-hole IP address
+      - <custom_dns_here> # Replace with your Network Adblocker IP address or select other DNS servers
     healthcheck:
       test: "python3 /usr/src/app/docker-health-check.py --host http://localhost" # Check if Puppeteer is accessible on port 3000
       interval: 30s # Check every 30 seconds
       timeout: 5s # Fail if not responsive within 5 seconds
       retries: 3 # Retry up to 3 times before marking as unhealthy
       start_period: 10s # Give Puppeteer up to 40 seconds to start
-  # Portainer volume variables
-volumes:
-  changedetection_ds:
+# Portainer volume variables
+# volumes:
+#   changedetection_ds:
