@@ -9,8 +9,10 @@ services:
     ports:
       - 5000:5000
     environment:
-      - SOCKPUPPET_URL=ws://sockpuppetbrowser:3000 # * this is for the puppeteer modification. Puppeteer is not officially supported by changedetection, but it works so smoothly.
-    # - BASE_URL=https://mysite.com # configure this for your own domain
+      - PLAYWRIGHT_DRIVER_URL=ws://sockpuppetbrowser:3000 # * this is for the puppeteer modification. Puppeteer is not officially supported by changedetection, but it works so smoothly.
+      # - WEBDRIVER_URL=http://playwright-chrome:4444/wd/hub # * This is for selenium
+      # - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000 # TODO: Commented out 8/19/2024; see comments below.
+      # - BASE_URL=https://mysite.com # configure this for your own domain
 
     depends_on:
       sockpuppetbrowser:
