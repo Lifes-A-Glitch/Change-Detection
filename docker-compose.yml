@@ -1,0 +1,51 @@
+services:
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io
+    container_name: changedetection
+    hostname: changedetection
+    volumes:
+      - ./data/datastore:/datastore # For without container management
+      # - changedetection_ds:/datastore # This is for portainer
+    environment:
+      - PORT=5000
+      # Log levels are in descending order. (TRACE is the most detailed one)
+      # Log output levels: TRACE, DEBUG(default), INFO, SUCCESS, WARNING, ERROR, CRITICAL
+      - LOGGER_LEVEL=ERROR
+      - PLAYWRIGHT_DRIVER_URL=ws://browser-sockpuppet-chrome:3000
+      - BASE_URL=http://docker.lab # configure this for your own domain
+      - HIDE_REFERER=true
+      - FETCH_WORKERS=3
+      - DISABLE_VERSION_CHECK=true
+      - TZ=America/Denver
+      - LC_ALL=en_US.UTF-8
+      - SCREENSHOT_MAX_HEIGHT=16000
+    ports:
+      - 127.0.0.1:5000:5000
+    restart: unless-stopped
+    depends_on:
+        browser-sockpuppet-chrome:
+            condition: service_started
+
+  browser-sockpuppet-chrome:
+    hostname: browser-sockpuppet-chrome
+    image: dgtlmoon/sockpuppetbrowser:latest
+    # cap_add:
+        # - SYS_ADMIN # SYS_ADMIN might be too much, but it can be needed on your platform https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#running-puppeteer-on-gitlabci
+    restart: unless-stopped
+    environment:
+        - SCREEN_WIDTH=1920
+        - SCREEN_HEIGHT=1024
+        - SCREEN_DEPTH=16
+        - MAX_CONCURRENT_CHROME_PROCESSES=3
+    dns:
+      # Comment out if you do not have a selective DNS you want to use. 
+      - 10.7.1.3 # Replace with your Network Adblocker IP address or select other DNS servers
+    healthcheck:
+      test: "python3 /usr/src/app/docker-health-check.py --host http://localhost" # Check if Puppeteer is accessible on port 3000
+      interval: 30s # Check every 30 seconds
+      timeout: 5s # Fail if not responsive within 5 seconds
+      retries: 3 # Retry up to 3 times before marking as unhealthy
+      start_period: 10s # Give Puppeteer up to 40 seconds to start
+
+# volumes:
+#   changedetection-data:
